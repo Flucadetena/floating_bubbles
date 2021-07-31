@@ -35,11 +35,11 @@ class BubbleFloatingAnimation {
   /// Function to Restart the floating bubble animation.
   _restart() {
     final startPosition = Offset(
-      .4 * random.nextDouble(),
+      1.4 * random.nextDouble(),
       1,
     );
     final endPosition = Offset(
-      .4 * random.nextDouble(),
+      1.4 * random.nextDouble(),
       0,
     );
 
