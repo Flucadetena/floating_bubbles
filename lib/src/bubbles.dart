@@ -45,6 +45,17 @@ class FloatingBubbles extends StatefulWidget {
   /// Shape of the Bubble. Default value is [BubbleShape.circle]
   final BubbleShape shape;
 
+  /// The speed at which the bubble moves. Every bubble has a slighty
+  /// variation to look like real bubbles
+  final int? speed;
+
+  /// A value between 0.0 and 1.0 corresponding to the % of the vertical screen.
+  /// 1 being the bottom and 0 the top.
+  final double verticalStart;
+
+  /// A custom widget you may want to use to generate as a floating buble
+  final List<Widget>? children;
+
   /// Creates Floating Bubbles in the Foreground to Any widgets that plays for [duration] amount of time.
   ///
   /// All Fields Are Required to make a new [Instance] of FloatingBubbles.
@@ -52,16 +63,19 @@ class FloatingBubbles extends StatefulWidget {
   /// `FloatingBubbles.alwaysRepeating()`.
   FloatingBubbles({
     required this.noOfBubbles,
-    required this.colorOfBubbles,
-    required this.sizeFactor,
+    this.colorOfBubbles = Colors.white,
+    this.sizeFactor = 0.1,
     required this.duration,
+    this.children,
     this.shape = BubbleShape.circle,
     this.opacity = 100,
     this.paintingStyle = PaintingStyle.fill,
     this.strokeWidth = 0,
+    this.speed,
+    this.verticalStart = 1,
   })  : assert(
-          noOfBubbles >= 10,
-          'Number of Bubbles Cannot be less than 10',
+          noOfBubbles >= 1,
+          'Number of Bubbles Cannot be less than 1, if you want to hide the bubles simply hide the widget',
         ),
         assert(
           sizeFactor > 0 && sizeFactor < 0.5,
@@ -72,21 +86,32 @@ class FloatingBubbles extends StatefulWidget {
         assert(
           opacity >= 0 && opacity <= 255,
           'opacity value should be between 0 and 255 inclusive.',
+        ),
+        assert(
+          verticalStart >= 0 && verticalStart <= 1,
+          'verticalStart must be a value between 0 and 1.',
+        ),
+        assert(
+          children == null || children.length == noOfBubbles,
+          'The children length must be the same as the number of bubbles.',
         );
 
   /// Creates Floating Bubbles that always floats and doesn't stop.
   /// All Fields Are Required to make a new [Instance] of FloatingBubbles.
   FloatingBubbles.alwaysRepeating({
     required this.noOfBubbles,
-    required this.colorOfBubbles,
-    required this.sizeFactor,
+    this.colorOfBubbles = Colors.white,
+    this.sizeFactor = 0.1,
+    this.children,
     this.shape = BubbleShape.circle,
     this.opacity = 60,
     this.paintingStyle = PaintingStyle.fill,
     this.strokeWidth = 0,
+    this.speed,
+    this.verticalStart = 1,
   })  : assert(
-          noOfBubbles >= 10,
-          'Number of Bubbles Cannot be less than 10',
+          noOfBubbles >= 1,
+          'Number of Bubbles Cannot be less than 1, if you want to hide the bubles simply hide the widget',
         ),
         assert(
           sizeFactor > 0 && sizeFactor < 0.5,
@@ -95,6 +120,14 @@ class FloatingBubbles extends StatefulWidget {
         assert(
           opacity >= 0 && opacity <= 255,
           'opacity value should be between 0 and 255 inclusive.',
+        ),
+        assert(
+          verticalStart >= 0 && verticalStart <= 1,
+          'verticalStart must be a value between 0 and 1.',
+        ),
+        assert(
+          children == null || children.length == noOfBubbles,
+          'The children length must be the same as the number of bubbles.',
         ) {
     duration = 0;
   }
@@ -117,7 +150,7 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
   @override
   void initState() {
     for (int i = 0; i < widget.noOfBubbles; i++) {
-      bubbles.add(BubbleFloatingAnimation(random));
+      bubbles.add(BubbleFloatingAnimation(random, speed: widget.speed));
     }
     if (widget.duration != null && widget.duration != 0)
       Timer(Duration(seconds: widget.duration!), () {
@@ -141,6 +174,7 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
     /// Creates a Loop Animation of Bubbles that float around the screen from bottom to top.
     /// If [duration] is 0, then the animation loops itself again and again.
     /// If [duration] is not 0, then the animation plays till the duration and stops.
+    ///
     return widget.duration == 0 && widget.duration != null
         ? LoopAnimation(
             tween: ConstantTween(1),
@@ -167,17 +201,55 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
             builder: (context, child, value) {
               _simulateBubbles();
               if (checkToStopAnimation == 0)
-                return drawBubbles(
-                  bubbles: BubbleModel(
-                    bubbles: bubbles,
-                    color: widget.colorOfBubbles,
-                    sizeFactor: widget.sizeFactor,
-                    opacity: widget.opacity,
-                    paintingStyle: widget.paintingStyle,
-                    strokeWidth: widget.strokeWidth,
-                    shape: widget.shape,
-                  ),
-                );
+                return widget.children != null
+                    ? Stack(
+                        children: [
+                          ...bubbles
+                              .asMap()
+                              .map((i, particle) {
+                                final progress = particle.progress();
+                                final MultiTweenValues animation =
+                                    particle.tween.transform(progress);
+
+                                double height =
+                                    MediaQuery.of(context).size.height *
+                                        widget.verticalStart;
+                                double topPositon =
+                                    animation.get<double>(OffsetProps.y) *
+                                        height;
+
+                                double widthAnimation =
+                                    animation.get<double>(OffsetProps.x);
+                                double widthPosition = (widthAnimation <= .20
+                                        ? .20
+                                        : widthAnimation >= .80
+                                            ? .80
+                                            : widthAnimation) *
+                                    MediaQuery.of(context).size.width;
+                                return MapEntry(
+                                  i,
+                                  Positioned(
+                                    top: topPositon,
+                                    left: widthPosition,
+                                    child: widget.children![i],
+                                  ),
+                                );
+                              })
+                              .values
+                              .toList(),
+                        ],
+                      )
+                    : drawBubbles(
+                        bubbles: BubbleModel(
+                          bubbles: bubbles,
+                          color: widget.colorOfBubbles,
+                          sizeFactor: widget.sizeFactor,
+                          opacity: widget.opacity,
+                          paintingStyle: widget.paintingStyle,
+                          strokeWidth: widget.strokeWidth,
+                          shape: widget.shape,
+                        ),
+                      );
               else
                 return Container(); // will display a empty container after playing the animations.
             },

@@ -4,12 +4,12 @@ import 'package:floating_bubbles/floating_bubbles.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations.dart';
 
-enum _OffsetProps { x, y }
+enum OffsetProps { x, y }
 
 /// This class Creates the animation of the bubbles flowing from bottom to top in the screen.
 class BubbleFloatingAnimation {
   /// Creates a tween between x and y coordinates.
-  late MultiTween<_OffsetProps> tween;
+  late MultiTween<OffsetProps> tween;
 
   /// Size of the bubble
   late double size;
@@ -23,7 +23,11 @@ class BubbleFloatingAnimation {
   /// Random object.
   final Random random;
 
-  BubbleFloatingAnimation(this.random) {
+  ///Duration of each bubble to reach to top from bottom.
+  late int speed;
+
+  BubbleFloatingAnimation(this.random, {int? speed}) {
+    this.speed = (speed != null) ? speed : 3000;
     _restart();
     _shuffle();
   }
@@ -31,24 +35,24 @@ class BubbleFloatingAnimation {
   /// Function to Restart the floating bubble animation.
   _restart() {
     final startPosition = Offset(
-      -0.2 + 1.4 * random.nextDouble(),
-      1.2,
+      .4 * random.nextDouble(),
+      1,
     );
     final endPosition = Offset(
-      -0.2 + 1.4 * random.nextDouble(),
-      -0.2,
+      .4 * random.nextDouble(),
+      0,
     );
 
-    tween = MultiTween<_OffsetProps>()
+    tween = MultiTween<OffsetProps>()
       ..add(
-        _OffsetProps.x,
+        OffsetProps.x,
         Tween(
           begin: startPosition.dx,
           end: endPosition.dx,
         ),
       )
       ..add(
-        _OffsetProps.y,
+        OffsetProps.y,
         Tween(
           begin: startPosition.dy,
           end: endPosition.dy,
@@ -56,7 +60,7 @@ class BubbleFloatingAnimation {
       );
 
     duration = Duration(
-          milliseconds: 3000,
+          milliseconds: speed,
         ) +
         Duration(
           milliseconds: random.nextInt(
@@ -150,8 +154,8 @@ class BubbleModel extends CustomPainter {
       final progress = particle.progress();
       final MultiTweenValues animation = particle.tween.transform(progress);
       final position = Offset(
-        animation.get<double>(_OffsetProps.x) * size.width,
-        animation.get<double>(_OffsetProps.y) * size.height,
+        animation.get<double>(OffsetProps.x) * size.width,
+        animation.get<double>(OffsetProps.y) * size.height,
       );
       if (shape == BubbleShape.circle)
         canvas.drawCircle(
