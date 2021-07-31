@@ -92,8 +92,8 @@ class FloatingBubbles extends StatefulWidget {
           'verticalStart must be a value between 0 and 1.',
         ),
         assert(
-          children == null || children.length == noOfBubbles,
-          'The children length must be the same as the number of bubbles.',
+          children == null || children.length >= noOfBubbles,
+          'The children length must be the same or higher as the number of bubbles.',
         );
 
   /// Creates Floating Bubbles that always floats and doesn't stop.
@@ -126,8 +126,8 @@ class FloatingBubbles extends StatefulWidget {
           'verticalStart must be a value between 0 and 1.',
         ),
         assert(
-          children == null || children.length == noOfBubbles,
-          'The children length must be the same as the number of bubbles.',
+          children == null || children.length >= noOfBubbles,
+          'The children length must be the same or higher as the number of bubbles.',
         ) {
     duration = 0;
   }
