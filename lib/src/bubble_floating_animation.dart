@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:floating_bubbles/floating_bubbles.dart';
+import 'package:floating_bubbles/src/services.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations.dart';
 
@@ -26,7 +27,9 @@ class BubbleFloatingAnimation {
   ///Duration of each bubble to reach to top from bottom.
   late int speed;
 
-  BubbleFloatingAnimation(this.random, {int? speed}) {
+  final bool sound;
+
+  BubbleFloatingAnimation(this.random, {this.sound = true, int? speed}) {
     this.speed = (speed != null) ? speed : 3000;
     _restart();
     _shuffle();
@@ -74,6 +77,8 @@ class BubbleFloatingAnimation {
 
     /// Size of each Bubble is calculated through this.
     size = 0.2 + random.nextDouble() * 0.4;
+
+    if (sound) playSound('bubble.mp3');
   }
 
   /// Shuffles the position of bubbles around the screen.

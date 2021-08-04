@@ -56,6 +56,10 @@ class FloatingBubbles extends StatefulWidget {
   /// A custom widget you may want to use to generate as a floating buble
   final List<Widget>? children;
 
+  /// Enable or disable sound when the bubbles are created
+  /// defaults to [true]
+  final bool sound;
+
   /// Creates Floating Bubbles in the Foreground to Any widgets that plays for [duration] amount of time.
   ///
   /// All Fields Are Required to make a new [Instance] of FloatingBubbles.
@@ -73,6 +77,7 @@ class FloatingBubbles extends StatefulWidget {
     this.strokeWidth = 0,
     this.speed,
     this.verticalStart = 1,
+    this.sound = true,
   })  : assert(
           noOfBubbles >= 1,
           'Number of Bubbles Cannot be less than 1, if you want to hide the bubles simply hide the widget',
@@ -109,6 +114,7 @@ class FloatingBubbles extends StatefulWidget {
     this.strokeWidth = 0,
     this.speed,
     this.verticalStart = 1,
+    this.sound = true,
   })  : assert(
           noOfBubbles >= 1,
           'Number of Bubbles Cannot be less than 1, if you want to hide the bubles simply hide the widget',
@@ -150,7 +156,8 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
   @override
   void initState() {
     for (int i = 0; i < widget.noOfBubbles; i++) {
-      bubbles.add(BubbleFloatingAnimation(random, speed: widget.speed));
+      bubbles.add(BubbleFloatingAnimation(random,
+          speed: widget.speed, sound: widget.sound));
     }
     if (widget.duration != null && widget.duration != 0)
       Timer(Duration(seconds: widget.duration!), () {
