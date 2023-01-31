@@ -11,7 +11,7 @@ Future playSound(String nameSound) async {
   // await audioPlayer.stop();
   final file = File('${(await getTemporaryDirectory()).path}/$nameSound');
   await file.writeAsBytes((await loadAsset(nameSound)).buffer.asUint8List());
-  await audioPlayer.play(file.path, isLocal: true);
+  await audioPlayer.play(DeviceFileSource(file.path));
 }
 
 Future loadAsset(String nameSound) async {
