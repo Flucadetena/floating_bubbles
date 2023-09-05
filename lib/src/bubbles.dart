@@ -86,8 +86,7 @@ class FloatingBubbles extends StatefulWidget {
           sizeFactor > 0 && sizeFactor < 0.5,
           'Size factor cannot be greater than 0.5 or less than 0',
         ),
-        assert(duration != null && duration >= 0,
-            'duration should not be null or less than 0.'),
+        assert(duration != null && duration >= 0, 'duration should not be null or less than 0.'),
         assert(
           opacity >= 0 && opacity <= 255,
           'opacity value should be between 0 and 255 inclusive.',
@@ -156,8 +155,7 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
   @override
   void initState() {
     for (int i = 0; i < widget.noOfBubbles; i++) {
-      bubbles.add(BubbleFloatingAnimation(random,
-          speed: widget.speed, sound: widget.sound));
+      bubbles.add(BubbleFloatingAnimation(random, speed: widget.speed, sound: widget.sound));
     }
     if (widget.duration != null && widget.duration != 0)
       Timer(Duration(seconds: widget.duration!), () {
@@ -183,8 +181,9 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
     /// If [duration] is not 0, then the animation plays till the duration and stops.
     ///
     return widget.duration == 0 && widget.duration != null
-        ? LoopAnimation(
+        ? LoopAnimationBuilder(
             tween: ConstantTween(1),
+            duration: Duration(seconds: widget.duration!),
             builder: (context, child, value) {
               _simulateBubbles();
               return drawBubbles(
@@ -200,10 +199,8 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
               );
             },
           )
-        : PlayAnimation(
-            duration: checkToStopAnimation == 0
-                ? Duration(seconds: widget.duration!)
-                : Duration.zero,
+        : PlayAnimationBuilder(
+            duration: checkToStopAnimation == 0 ? Duration(seconds: widget.duration!) : Duration.zero,
             tween: ConstantTween(1),
             builder: (context, child, value) {
               _simulateBubbles();
@@ -215,18 +212,12 @@ class _FloatingBubblesState extends State<FloatingBubbles> {
                               .asMap()
                               .map((i, particle) {
                                 final progress = particle.progress();
-                                final MultiTweenValues animation =
-                                    particle.tween.transform(progress);
+                                final Movie animation = particle.tween.transform(progress);
 
-                                double height =
-                                    MediaQuery.of(context).size.height *
-                                        widget.verticalStart;
-                                double topPositon =
-                                    animation.get<double>(OffsetProps.y) *
-                                        height;
+                                double height = MediaQuery.of(context).size.height * widget.verticalStart;
+                                double topPositon = animation.get<double>(OffsetProps.y) * height;
 
-                                double widthAnimation =
-                                    animation.get<double>(OffsetProps.x);
+                                double widthAnimation = animation.get<double>(OffsetProps.x);
                                 double widthPosition = (widthAnimation <= .20
                                         ? .20
                                         : widthAnimation >= .80

@@ -10,7 +10,7 @@ enum OffsetProps { x, y }
 /// This class Creates the animation of the bubbles flowing from bottom to top in the screen.
 class BubbleFloatingAnimation {
   /// Creates a tween between x and y coordinates.
-  late MultiTween<OffsetProps> tween;
+  late MovieTween tween;
 
   /// Size of the bubble
   late double size;
@@ -46,15 +46,15 @@ class BubbleFloatingAnimation {
       0,
     );
 
-    tween = MultiTween<OffsetProps>()
-      ..add(
+    tween = MovieTween()
+      ..tween(
         OffsetProps.x,
         Tween(
           begin: startPosition.dx,
           end: endPosition.dx,
         ),
       )
-      ..add(
+      ..tween(
         OffsetProps.y,
         Tween(
           begin: startPosition.dy,
@@ -157,7 +157,7 @@ class BubbleModel extends CustomPainter {
 
     bubbles.forEach((particle) {
       final progress = particle.progress();
-      final MultiTweenValues animation = particle.tween.transform(progress);
+      final Movie animation = particle.tween.transform(progress);
       final position = Offset(
         animation.get<double>(OffsetProps.x) * size.width,
         animation.get<double>(OffsetProps.y) * size.height,
