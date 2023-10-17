@@ -46,22 +46,6 @@ class BubbleFloatingAnimation {
       0,
     );
 
-    tween = MovieTween()
-      ..tween(
-        OffsetProps.x,
-        Tween(
-          begin: startPosition.dx,
-          end: endPosition.dx,
-        ),
-      )
-      ..tween(
-        OffsetProps.y,
-        Tween(
-          begin: startPosition.dy,
-          end: endPosition.dy,
-        ),
-      );
-
     duration = Duration(
           milliseconds: speed,
         ) +
@@ -75,6 +59,26 @@ class BubbleFloatingAnimation {
       milliseconds: DateTime.now().millisecondsSinceEpoch,
     );
 
+    tween = MovieTween()
+      ..tween(
+        OffsetProps.x,
+        Tween(
+          begin: startPosition.dx,
+          end: endPosition.dx,
+        ),
+        begin: Duration(milliseconds: 0),
+        duration: duration,
+      )
+      ..tween(
+        OffsetProps.y,
+        Tween(
+          begin: startPosition.dy,
+          end: endPosition.dy,
+        ),
+        begin: Duration(milliseconds: 0),
+        duration: duration,
+      );
+
     /// Size of each Bubble is calculated through this.
     size = 0.2 + random.nextDouble() * 0.4;
 
@@ -84,8 +88,7 @@ class BubbleFloatingAnimation {
   /// Shuffles the position of bubbles around the screen.
   void _shuffle() {
     startTime -= Duration(
-      milliseconds:
-          (this.random.nextDouble() * duration.inMilliseconds).round(),
+      milliseconds: (this.random.nextDouble() * duration.inMilliseconds).round(),
     );
   }
 
